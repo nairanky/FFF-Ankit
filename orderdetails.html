@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 80%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-info {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+
+        .product-info h3 {
+            margin-top: 0;
+        }
+
+        .product-info p {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 style="text-align: center;">Order Details</h2>
+
+    <?php
+    require('../includes/connection.inc.php');
+
+    $sql = "SELECT * FROM product";
+    $result = mysqli_query($con, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            ?>
+            <div class="product-info">
+                <h3><?php echo $row['product_name']; ?></h3>
+                <p><strong>Category:</strong>
+                    <?php
+                    // Retrieve category name based on category ID
+                    $category_id = $row['categories_id'];
+                    $category_query = "SELECT category_name FROM categories WHERE category_id = $category_id";
+                    $category_result = mysqli_query($con, $category_query);
+                    if ($category_row = mysqli_fetch_assoc($category_result)) {
+                        echo $category_row['category_name'];
+                    } else {
+                        echo "N/A";
+                    }
+                    ?>
+                </p>
+                <p><strong>MRP:</strong> <?php echo $row['mrp']; ?></p>
+                <p><strong>Selling Price:</strong> <?php echo $row['price']; ?></p>
+                <p><strong>Quantity Available:</strong> <?php echo $row['qty_available']; ?></p>
+                <p><strong>Description:</strong> <?php echo $row['description']; ?></p>
+                <p><strong>Status:</strong> <?php echo $row['status'] == 'true' ? 'Available' : 'Not Available'; ?></p>
+            </div>
+            <?php
+        }
+    } else {
+        echo "No products found.";
+    }
+
+    // Close the database connection
+    mysqli_close($con);
+    ?>
+
+</div>
+
+</body>
+</html>
